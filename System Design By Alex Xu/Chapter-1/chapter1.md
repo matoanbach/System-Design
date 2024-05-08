@@ -97,3 +97,43 @@ Because applications are required to read more than write, then there are usuall
     <li>if all slaves goes down, all reads come toward masters temporarily. If one slave goes down and there are still available slaves, then these slaves replace the failed slave.</li>
     <li>If all masters goes down, one slave will be promoted to be a master.</li>
 </ul>
+
+### How does a web server look like with a load balancer and master-slave databases?
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-6.png">
+
+## Cache
+
+A cache is a temporary storage that store frequently accessed data or expensive responses. This kind of data storage preventing our database servers from being fetched too repeatedly and frequently.
+
+## Cache Tier
+
+The cache tier is a temporary data store layer, making it much faster than a typical database. It improves system performance, reduce database workload and also scale the cache tier independently.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-7.png">
+
+When receiving a request, a web server checks if the cache has the response or not. If it does, resend that response to users. If it does not, then fetch it from database and then save it the cache for later use.
+
+### Considerations when using cache
+
+<ul>
+    <li>If the same data is read frequently but modified infrequently. It should not be used as permanent database. Because when the cache server restarts, all the data will be wiped out </li>
+    <li>Expiration Policy: This policy tells us when the data in the cache should be removed. Don't make the expiration data too short, because it will cause the system to reload too frequently. Also, don't make it too long, since the data will be tale</li>
+    <li>Consistency: This problem happens when our database and the cache are not in sync. Because we perform writes on database, our cache might not be updated</li>
+    <li>Mitigating Failures: with only cache, a single point of failure will arise (SPOF). more cache storage should be recommended</li>
+    <li>Eviction Policy: This policy tells us what we should remove from our cache when it is full. Several eviction policies can be used like least-recently-used (LRU), least-frequently-used (LFU) or first-in-first-out (FIFO)</li>
+</ul>
+
+## Content delivery network (CDN)
+
+## Stateless web tier
+
+## Data centers
+
+## Message queue
+
+## Logging, metrics, automation 
+
+## Database scaling
+
+## Millions of users and beyond

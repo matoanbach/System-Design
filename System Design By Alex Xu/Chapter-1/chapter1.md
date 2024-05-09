@@ -81,7 +81,7 @@ The methodology behind database replication is the relationship between the orig
 
 All data-modifying operations like insert, update, delete will come to the master database, and only read operation will come to the slaves. 
 
-Because applications are required to read more than write, then there are usually more masters than slaves.
+Because applications are required to read more than write, then there are usually more slaves than masters.
 
 <img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-5.png">
 
@@ -125,6 +125,38 @@ When receiving a request, a web server checks if the cache has the response or n
 </ul>
 
 ## Content delivery network (CDN)
+A CDN is used to deliver static content like HTML, music, images, videos, CSS, javascript, etc.
+
+It can also deliver Dynamic content.
+
+When a user make a request for a static content, the closest CDN will be responsible for sending that content. The further the users are, the longer it will take to deliver that content.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-9.png">
+
+### How the flow go for CDN?
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-10.png">
+
+<ol>
+    <li>User A request an image with an URL.</li>
+    <li>If the image is not in the CDN yet, CDN will fetch that image from the original storage like Amazon S3</li>
+    <li>The image will be stored in the CDN afterward with Time-to-live policy that tells us when we can remove that content from the CDN cache. </li>
+    <li>The image is returned back to User A. And the image will live until the TTL (time-to-live) policy expires.</li>
+    <li>User B sends a request of the same image to the CDN. If that image is still available in the CDN, return it back to User B</li>
+</ol>
+
+### Considerations of using a CDN
+Cost: data coming in and out of the CDN will be chared by whoever is its host. You might want to remove data that is not frequently used from the CDN to save the costs
+
+Cache expiry: If the cache expiry time is too short, the CDN needs to refetch data from the original database more frequently, rising the costs. If the expiry time is too long, the data could not be fresh anymore.
+
+CDN fallback: It is recommended to know how to deal with the situation of CDN outage.
+
+Invalidating files: Sometimes, we need to remove some content before it expires.
+
+### The design after adding CDN and cache
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-11.png">
 
 ## Stateless web tier
 

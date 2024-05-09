@@ -56,6 +56,7 @@ Non-relation databases are also call NoSQL database. Because join operations are
 |       ...       |    ...     |
 
 ## Vertical scaling vs horizontal scaling
+
 Vertical Scaling (scale-up) means that we can make the server (or make the computer that the server is running on bigger). Horizontal Scaling (scale-out) means that we can add more servers (or we add more computers or instances)
 
 Vertical Scaling gives one server more power (CPU power or RAM, etc.). But nowadays, adding computer power has more limitation than add more computers with the same power. Even though vertical scaling reduce the redundancy, it is disaster if one server goes down, the whole web server goes down as well.
@@ -72,20 +73,20 @@ Users request public IP as usual. After that users request to the servers, now t
 
 Using a load balancer in our system, we can solve failover or our web server shut down. For example, if one server goes down, our load balancer will direct the traffic toward other servers. If the website grows rapidly, we just need to add more servers.
 
-When we solve a problem, usually, another will come up to us. Here, we add more servers, causing failover redundancy to our database server with read/write operations. Well, we can do data replication to solve this problem. 
-
+When we solve a problem, usually, another will come up to us. Here, we add more servers, causing failover redundancy to our database server with read/write operations. Well, we can do data replication to solve this problem.
 
 ## Database Replication
 
 The methodology behind database replication is the relationship between the original (master) and the copies (slave).
 
-All data-modifying operations like insert, update, delete will come to the master database, and only read operation will come to the slaves. 
+All data-modifying operations like insert, update, delete will come to the master database, and only read operation will come to the slaves.
 
 Because applications are required to read more than write, then there are usually more slaves than masters.
 
 <img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-5.png">
 
 ### Advantages of database replication:
+
 <ul>
     <li>Better performance: all writes come to master nodes and all read comes to slaves, which can let us perform more queries in parallel</li>
     <li>Reliability: one database server goes down due to unexpected disaster, etc, then data is still preserved in other databases as well. So we do not need to worry about data loss</li>
@@ -93,6 +94,7 @@ Because applications are required to read more than write, then there are usuall
 </ul>
 
 ### How does the flow go when one database server goes down?
+
 <ul>
     <li>if all slaves goes down, all reads come toward masters temporarily. If one slave goes down and there are still available slaves, then these slaves replace the failed slave.</li>
     <li>If all masters goes down, one slave will be promoted to be a master.</li>
@@ -125,6 +127,7 @@ When receiving a request, a web server checks if the cache has the response or n
 </ul>
 
 ## Content delivery network (CDN)
+
 A CDN is used to deliver static content like HTML, music, images, videos, CSS, javascript, etc.
 
 It can also deliver Dynamic content.
@@ -146,6 +149,7 @@ When a user make a request for a static content, the closest CDN will be respons
 </ol>
 
 ### Considerations of using a CDN
+
 Cost: data coming in and out of the CDN will be chared by whoever is its host. You might want to remove data that is not frequently used from the CDN to save the costs
 
 Cache expiry: If the cache expiry time is too short, the CDN needs to refetch data from the original database more frequently, rising the costs. If the expiry time is too long, the data could not be fresh anymore.
@@ -160,12 +164,117 @@ Invalidating files: Sometimes, we need to remove some content before it expires.
 
 ## Stateless web tier
 
+Stateless method allows our applications to scale horizontally.
+
+### Stateful architecture
+
+Lets say we have multiple stateful servers. So when a user authenticating session is created in one server, but the session can't be used in another server. That means the user must authenticate themselves if they request another server.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-12.png">
+
+### Stateless architecture
+
+A token session is created by one server can be reused by another server as long as the token is still valid. This method is referred as stateless architecture where users do not need to create a new session repeatedly for each server.
+
+State data is stored in a shared data store and kept of web servers. It is simpler, more robust, and scalable.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-13.png">
+
+### The design after adding a stateless web tier
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-14.png">
+
 ## Data centers
 
-## Message queue
+The figure below is an example of two data centers, preventing unexpected issues. In most cases, user requests are routed based on their geographical location.
 
-## Logging, metrics, automation 
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-15.png">
+
+### An example when an database center outage occurs
+
+The given example below show what happens when there is one server is failed.
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-16.png">
+
+However, it goes along with several technical challenges.
+
+<ul>
+    <li>Traffic redirection: traffic has to be redirected to the closest data center.</li>
+    <li>Data synchronization: a healthy server needs to be in sync with the server that is failed</li>
+    <li>Test and deployment: testing and deploying multi-data center setup is not easy.</li>
+</ul>
+
+## Message queue
+A message queue is durable, enabling asynchronous communication.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-17.png">
+
+Basic architecture:
+<ul>
+    <li>A producer creates a message and push it into the queue</li>
+    <li>The consumer subscribe and then process it</li>
+</ul>
+
+Message queue allows decoupling between producer and consumer. This means that when consumer is failed, producer can still push messages into the queue and then the consumer can process it later.
+
+An example of message queue - photo processing:
+
+- Web servers publish photo processing jobs to the message queue.
+- Photo processing workers pick up the jobs the message queue and process it 
+- Number of workers can be scaled up and down based on how busy the message queue is.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-18.png">
+
+## Logging, metrics, automation
+These are good practices to maintain and debug if we have a large-scale system.
+
+- Logging: errors can be stored and then later searched and viewed by our service operators
+- Metrics: collecting different types of metrics help us to gain business insights and understand the health of our system better.
+- Automation: development productivity can be improved if we invest in continuous integration automation tools such as automated build, deploy, test, etc. 
+
+### Our updated system design
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-19.png">
 
 ## Database scaling
+### Vertical scaling
+Vertical scaling is when when add more power (CPU, RAM, DISK, etc.) to an existing machine.
+There are drawbacks:
+- We can add more CPU, RAM, etc. But there is always a limit for hardware
+- Single point of failures
+- The overall cost is high
+
+
+### Horizontal scaling
+Horizontal scaling is also known as sharding technique, which is just simply to add more machines.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-20.png">
+
+Sharing technique divides data tables into many tables and stores them into different sharding database. Each database will have a different sharding key, which will serves different users.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-21.png">
+
+Below shows how the user table inside each sharded database look like.
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-22.png">
+
+There are challenges:
+- Resharding data: resharding is needed when one single shard is full. Some shards can be filled or exhausted more quickly due to uneven data distribution. This problem can be solved with consistent hashing
+- Celebrity problem (aka hotspot): one shard could potentially hold more celebrities' information like Katy Pety, Justin Bieber and Lady Gaga, causing overload. This can be solved by distributing each celebrity among shards equally.
+- Join and de-normalization: Once a database has been sharded, it is challenging to rejoin the tables. 
+
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-1/pics/figure1-23.png">
 
 ## Millions of users and beyond
+
+Scaling is iterative not once-in-a-life-time event. 
+Key points of this chapter
+<ul>
+    <li>Keep the web tier stateless</li>
+    <li>Build redundancy at every tier</li>
+    <li>Cache data as much as you can</li>
+    <li>Support multiple data centers</li>
+    <li>Host static assess in CDN</li>
+    <li>Scale your data tier by sharding</li>
+    <li>Split tiers into individual services</li>
+    <li>Monitor your system and use automation tools</li>
+</ul>

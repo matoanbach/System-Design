@@ -42,9 +42,9 @@ Go through a few use cases to see if there is any edge cases existing.
 It depends if we want to include our APIs endpoints and database schema here.
 
 Example: "Design a news feed system".
-<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-2/pics/figure3-1.png">
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-3/pics/figure3-1.png">
 
-<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-2/pics/figure3-2.png">
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-3/pics/figure3-2.png">
 
 ### Step 3 - Design deep dive
 
@@ -66,9 +66,9 @@ Example: Design a news feed system
 1. Feed publishing
 2. News feed retrieval
 
-<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-2/pics/figure3-3.png">
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-3/pics/figure3-3.png">
 
-<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-2/pics/figure3-4.png">
+<img src="https://github.com/matoanbach/System-Design-Notes/blob/main/System%20Design%20By%20Alex%20Xu/Chapter-3/pics/figure3-4.png">
 
 ## Step 4 - Wrap up
 
